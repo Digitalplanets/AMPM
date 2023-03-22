@@ -4,7 +4,7 @@ from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
 import time
-import pandas as pd
+
 import spacy
 import re
 
@@ -21,10 +21,10 @@ def scrape():
     password.send_keys(Keys.ENTER)
     time.sleep(5)
     driver.get("https://app.textdrip.com/conversations")
-    scroll_box = driver.find_element_by_xpath('//*[@id="sidechat"]')
-    l = scroll_box.find_elements_by_xpath('//*[@id="list-empty-list2"]/div/div[3]/small')
-    r = scroll_box.find_elements_by_xpath('//*[@id="list-empty-list2"]/div/div[1]')
-    g = scroll_box.find_elements_by_xpath('//*[@id="list-empty-list2"]/div')
+    scroll_box = driver.find_element(by=By.XPATH, value='//*[@id="sidechat"]')
+    l = scroll_box.find_element(by=By.XPATH, value='//*[@id="list-empty-list2"]/div/div[3]/small')
+    r = scroll_box.find_element(by=By.XPATH, value='//*[@id="list-empty-list2"]/div/div[1]')
+    g = scroll_box.find_element(by=By.XPATH, value='//*[@id="list-empty-list2"]/div')
     for i in g:
         vv = i.text
         text = vv.strip()
