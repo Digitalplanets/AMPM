@@ -132,8 +132,10 @@ def chckinfo():
     try:
         name = driver.find_element(by=By.XPATH, value='/html/body/main/div/div[2]/div[1]/div[2]/div[1]/div[1]/p')
         return True
-    except:
+    except NoSuchElementException:
         return False
+    else:
+        print('unknown error, contact hue')
 
 
 
