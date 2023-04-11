@@ -78,6 +78,8 @@ def mhquote(x):
         qr = "$448-$502"
     if x > 55 and x < 64:
         qr = "$502-$588"
+    if x > 64:
+        qr = "Age error"
     return qr
 
 def fhquote(x):
@@ -128,11 +130,12 @@ headers = {
 
 def chckinfo():
     try:
-        name = driver.find_element(by=By.XPATH, value='/html/body/main/div/div[2]/div[1]/div[2]/div[1]/div[2]/p[1]/span[2]')
-        age = driver.find_element(by=By.XPATH, value='/html/body/main/div/div[2]/div[1]/div[2]/div[1]/div[2]/p[1]/span[2]')
+        name = driver.find_element(by=By.XPATH, value='/html/body/main/div/div[2]/div[1]/div[2]/div[1]/div[1]/p')
         return True
     except:
         return False
+
+
 
 def checkyes():
     hapik = requests.get('http://www.huemanservices.com/19keyscount')
@@ -159,8 +162,12 @@ def checkyes():
                 formattedNumber = '-'.join([srcnumber[:3], srcnumber[3:6], srcnumber[6:]])
                 driver.get('https://www.peoplesearchnow.com/phone/' + formattedNumber)
                 time.sleep(2)
-                name2 = driver.find_element(by=By.XPATH, value='/html/body/main/div/div[2]/div[1]/div[2]/div[1]/div[1]/p')
-                name2 = name2.text
+                if checkinfo() == True:
+                    name2 = driver.find_element(by=By.XPATH, value='/html/body/main/div/div[2]/div[1]/div[2]/div[1]/div[1]/p')
+                    name2 = name2.text
+                else:
+                    name2 = 'need name'
+                    
                 ssc = sim(name1, name2)
                 if ssc < 0.4:
                     sndurl = "https://api.textdrip.com/api/send-message"
