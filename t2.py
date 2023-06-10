@@ -43,11 +43,21 @@ def scrape():
         text = re.sub(r'\s+', ' ', text)
         text = re.findall(r'(?<=\+)[^\n]+', text)[-1].strip()
         result = {'text': text}
-        keywords = ['yes', 'yea', 'sure', 'yeah']
-        if any(keyword.lower() in result['text'].lower() for keyword in keywords):
+        if 'Yes' in result['text']:
+            numz.append(result['text'][:11])
+        elif 'YES' in result['text']:
+            numz.append(result['text'][:11])
+        elif 'yes' in result['text']:
+            numz.append(result['text'][:11])
+        elif 'yea' in result['text']:
+            numz.append(result['text'][:11])
+        elif 'Sure' in result['text']:
+            numz.append(result['text'][:11])
+        elif 'sure' in result['text']:
             numz.append(result['text'][:11])
     driver.quit()
     print(numz)
+    print(len(numz))
     return numz
 
 
@@ -63,21 +73,21 @@ def sim(x,y):
 
 def mhquote(x):
     if x >= 18 and x < 25:
-        qr = "$232-$298"
+        qr = "$232-$298/Month"
     if x >= 25 and x < 30:
-        qr = "$210-$302"
+        qr = "$210-$302/Month"
     if x >= 30 and x < 35:
-        qr = "$236-$318"
+        qr = "$236-$318/Month"
     if x >= 35 and x < 40:
-        qr = "$284-$342"
+        qr = "$284-$342/Month"
     if x >= 40 and x < 45:
-        qr = "$345-$398"
+        qr = "$345-$398/Month"
     if x >= 45 and x < 50:
-        qr = "$364-$442"
+        qr = "$364-$442/Month"
     if x >= 50 and x < 55:
-        qr = "$448-$502"
+        qr = "$448-$502/Month"
     if x >= 55 and x < 64:
-        qr = "$502-$588"
+        qr = "$502-$588/Month"
     if x >= 64:
         qr = "Age error"
     return qr
@@ -143,7 +153,7 @@ def checkyes():
                     "receiver": number,
                     "message": 'Okay no problem, I just need your Age and Zip code to produce some accurate quotes for you. If you would like a family quote please include their ages as well.'
                     }
-                jj = requests.post(sndurl, headers=headers, data=data)
+                #jj = requests.post(sndurl, headers=headers, data=data)
                 print('Requested Additional information for: ',number)
                 driver.quit()
         elif ages == "Age error":
@@ -152,7 +162,7 @@ def checkyes():
                 "receiver": number,
                 "message": 'Okay no problem, I just need your Age and Zip code to produce some accurate quotes for you. If you would like a family quote please include their ages as well.'
                 }
-            jj = requests.post(sndurl, headers=headers, data=data)
+            #jj = requests.post(sndurl, headers=headers, data=data)
             print('Requested Additional information for: ',number)
             driver.quit()
         else:
@@ -164,11 +174,11 @@ def checkyes():
             sndurl = "https://api.textdrip.com/api/send-message"
             data = {
                 "receiver": number,
-                "message": str(vari)+ ''' $0  Calendar Year Deductible for Day to Day Services Fully Tax Deductible No copays 24 mo. Rate Guarantee Dental/Vision(optional) Does this work for your budget?'''
+                "message": "Thank you," + str(vari) + '''PPO coverage, $0 Deductible, No copays Rate Guarantee Dental/Vision(optional) Does this work for your budget?'''
                 }
             print('quoting')
-            jj = requests.post(sndurl, headers=headers, data=data)
-            print(jj)
+            #jj = requests.post(sndurl, headers=headers, data=data)
+            #print(jj)
             #numbers.remove(number)
             driver.quit()
             #text_display.insert(tk.END, data['message'])
