@@ -4,9 +4,11 @@ from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
 import time
-
 import spacy
 import re
+from selenium.common.exceptions import NoSuchElementException
+import threading
+
 
 def scrape():
     numz = []
@@ -17,39 +19,37 @@ def scrape():
     username.send_keys("Ashleylynnmiller819@yahoo.com")
     time.sleep(2)
     password = driver.find_element(by=By.NAME, value="password")
-    password.send_keys("Jj121218!")
+    password.send_keys("Jj121218*")
     password.send_keys(Keys.ENTER)
     time.sleep(5)
     driver.get("https://app.textdrip.com/conversations")
     scroll_box = driver.find_element('xpath', '//*[@id="sidechat"]')
+
     #for i in scroll_box:
         #print(i)
+    na = scroll_box.find_elements(by=By.XPATH, value= '//*[@id="list-empty-list2"]/div/text()')
+    nu = scroll_box.find_elements(by=By.XPATH, value= '//*[@id="list-empty-list2"]/div/div[1]')
+    ms = scroll_box.find_elements(by=By.XPATH, value= '//*[@id="list-empty-list2"]/div/div[3]/small')
     l = scroll_box.find_elements(by=By.XPATH, value='//*[@id="list-empty-list2"]/div/div[3]/small')
     r = scroll_box.find_elements(by=By.XPATH, value='//*[@id="list-empty-list2"]/div/div[1]')
     g = scroll_box.find_elements(by=By.XPATH, value='//*[@id="list-empty-list2"]/div')
 
     for i in g:
+        print(i.text)
         vv = i.text
         text = vv.strip()
-        name = re.findall(r'\b[A-Z]+\s*[A-Z]+\s*[A-Z]+\s*[A-Z]+\s*', text)[0].strip()
+        name = re.findall(r'\\b[A-Z]+\s*[A-Z]+\s*[A-Z]+\s*[A-Z]+\s*', text)
         number = re.findall(r'\+(\d+)\s*', text)[0]
         text = re.sub(r'\s+', ' ', text)
         text = re.findall(r'(?<=\+)[^\n]+', text)[-1].strip()
         result = {'text': text}
-        if 'Yes' in result['text']:
-            numz.append(result['text'][:11])
-        elif 'YES' in result['text']:
-            numz.append(result['text'][:11])
-        elif 'yes' in result['text']:
-            numz.append(result['text'][:11])
-        elif 'yea' in result['text']:
-            numz.append(result['text'][:11])
-        elif 'Sure' in result['text']:
-            numz.append(result['text'][:11])
-        elif 'sure' in result['text']:
+        keywords = ['yes', 'yea', 'sure', 'yeah']
+        if any(keyword.lower() in result['text'].lower() for keyword in keywords):
             numz.append(result['text'][:11])
     driver.quit()
+    print(numz)
     return numz
+
 
 nlp = spacy.load("en_core_web_sm")
 
@@ -62,64 +62,25 @@ def sim(x,y):
     return ss
 
 def mhquote(x):
-    if x > 18 and x < 25:
+    if x >= 18 and x < 25:
         qr = "$232-$298"
-    if x > 25 and x < 30:
+    if x >= 25 and x < 30:
         qr = "$210-$302"
-    if x > 30 and x < 35:
+    if x >= 30 and x < 35:
         qr = "$236-$318"
-    if x > 35 and x < 40:
+    if x >= 35 and x < 40:
         qr = "$284-$342"
-    if x > 40 and x < 45:
+    if x >= 40 and x < 45:
         qr = "$345-$398"
-    if x > 45 and x < 50:
+    if x >= 45 and x < 50:
         qr = "$364-$442"
-    if x > 50 and x < 55:
+    if x >= 50 and x < 55:
         qr = "$448-$502"
-    if x > 55 and x < 64:
+    if x >= 55 and x < 64:
         qr = "$502-$588"
-    if x > 64:
+    if x >= 64:
         qr = "Age error"
     return qr
-
-def fhquote(x):
-    if x > 18 and x < 25:
-        qr = "$232-$298"
-    if x > 25 and x < 30:
-        qr = "$272-$338"
-    if x > 30 and x < 35:
-        qr = "$304-$362"
-    if x > 35 and x < 40:
-        qr = "$328-$364"
-    if x > 40 and x < 45:
-        qr = "$352-$398"
-    if x > 45 and x < 50:
-        qr = "$398-$452"
-    if x > 50 and x < 55:
-        qr = "$434-$474"
-    if x > 55 and x < 64:
-        qr = "$498-$584"
-    return qr
-
-def mhdvquote(x):
-    if x > 18 and x < 25:
-        qr = "$238-$304"
-    if x > 25 and x < 30:
-        qr = "$262-$318"
-    if x > 30 and x < 35:
-        qr = "$278-$332"
-    if x > 35 and x < 40:
-        qr = "$298-$372"
-    if x > 40 and x < 45:
-        qr = "$326-$398"
-    if x > 45 and x < 50:
-        qr = "$398-$466"
-    if x > 50 and x < 55:
-        qr = "$462-$508"
-    if x > 55 and x < 64:
-        qr = "$544-$598"
-    return (qr)
-
 
 headers = {
     'Authorization': 'Bearer t0pDPeQjnvr3mCkSsWyc0P1qpEhCLYwbwxnxj2gb'
@@ -128,7 +89,7 @@ headers = {
 #numbers = numbers in selected dataframe. 
 
 
-def chckinfo():
+def checkinfo(driver):
     try:
         name = driver.find_element(by=By.XPATH, value='/html/body/main/div/div[2]/div[1]/div[2]/div[1]/div[1]/p')
         return True
@@ -141,60 +102,78 @@ def chckinfo():
 
 def checkyes():
     hapik = requests.get('http://www.huemanservices.com/19keyscount')
+    print('ok')
     if hapik.status_code == 200:
         pass
     else:
         return
     numbers = scrape()
-    for i in numbers:
-        number = i
+    for number in numbers:
+        print(len(numbers))
         chaturl= 'https://api.textdrip.com/api/get-chats'
         gg=requests.post(chaturl, headers=headers, data={'phone':number, "page": "1"})
         gg=json.loads(gg.text)
         chats = gg['chats']['data']
-        number = number
-        for i in chats:
-            if i.get("type") == 'sender' and i.get("message") == 'yes' or i.get("message") == 'Yes' :
-                lookup = requests.post("https://api.textdrip.com/api/get-contact-detail", headers = headers, data={"phone": number})
-                cont = json.loads(lookup.text)
-                name1 = cont['contact']['name']
-                driver = webdriver.Safari()
-                driver.maximize_window()
-                srcnumber = number[1:]
-                formattedNumber = '-'.join([srcnumber[:3], srcnumber[3:6], srcnumber[6:]])
-                driver.get('https://www.peoplesearchnow.com/phone/' + formattedNumber)
-                time.sleep(2)
-                if checkinfo() == True:
-                    name2 = driver.find_element(by=By.XPATH, value='/html/body/main/div/div[2]/div[1]/div[2]/div[1]/div[1]/p')
-                    name2 = name2.text
-                else:
-                    name2 = 'need name'
-                    
-                ssc = sim(name1, name2)
-                if ssc < 0.4:
-                    sndurl = "https://api.textdrip.com/api/send-message"
-                    data = {
-                        "receiver": number,
-                        "message": 'Okay no problem, I just need your Age and Zip code to produce some accurate quotes for you. If you would like a family quote please include their ages as well.'
-                        }
-                    jj = requests.post(sndurl, headers=headers, data=data)
-                    #print('Requested Additional information for: ',number)
-                else:
-                    age = driver.find_element(by=By.XPATH, value='/html/body/main/div/div[2]/div[1]/div[2]/div[1]/div[2]/p[1]/span[2]')
-                    ages=age.text.strip()
-                    driver.close()
-                    vari = mhquote(int(ages))
-                    sndurl = "https://api.textdrip.com/api/send-message"
-                    data = {
-                        "receiver": number,
-                        "message": str(vari)+ ''' Monthly \n United Healthcare Network PPO Nationwide coverage \n $0  Calendar Year Deductible for Day to Day Services Fully Tax Deductible No copays 24 mo. Rate Guarantee Dental/Vision(optional) Does this work for your budget?'''
-                        }
-                    jj = requests.post(sndurl, headers=headers, data=data)
-                    text_display.insert(tk.END, data['message'])
-                    text_display.insert(tk.END, number)
-                    numbers.remove(number)
-            else:
-                pass
+        print('done')
+        lookup = requests.post("https://api.textdrip.com/api/get-contact-detail", headers = headers, data={"phone": number})
+        cont = json.loads(lookup.text)
+        name1 = cont['contact']['name']
+        print(name1)
+        driver = webdriver.Safari()
+        driver.maximize_window()
+        srcnumber = number[1:]
+        formattedNumber = '-'.join([srcnumber[:3], srcnumber[3:6], srcnumber[6:]])
+        driver.get('https://www.peoplesearchnow.com/phone/' + formattedNumber)
+        time.sleep(2)
+        if checkinfo(driver) == True:
+            name2 = driver.find_element(by=By.XPATH, value='/html/body/main/div/div[2]/div[1]/div[2]/div[1]/div[1]/p')
+            name2 = name2.text
+            print(name2)
+        else:
+            name2 = 'need name'     
+        ssc = sim(name1, name2)
+        age = driver.find_element(by=By.XPATH, value='/html/body/main/div/div[2]/div[1]/div[2]/div[1]/div[2]/p[1]/span[2]')
+        print('Age: ', age)
+        ages=age.text.strip()
+        print('age :', ages)
+        #driver.quit()
+        if ssc < 0.4:
+                sndurl = "https://api.textdrip.com/api/send-message"
+                data = {
+                    "receiver": number,
+                    "message": 'Okay no problem, I just need your Age and Zip code to produce some accurate quotes for you. If you would like a family quote please include their ages as well.'
+                    }
+                jj = requests.post(sndurl, headers=headers, data=data)
+                print('Requested Additional information for: ',number)
+                driver.quit()
+        elif ages == "Age error":
+            sndurl = "https://api.textdrip.com/api/send-message"
+            data = {
+                "receiver": number,
+                "message": 'Okay no problem, I just need your Age and Zip code to produce some accurate quotes for you. If you would like a family quote please include their ages as well.'
+                }
+            jj = requests.post(sndurl, headers=headers, data=data)
+            print('Requested Additional information for: ',number)
+            driver.quit()
+        else:
+            age = driver.find_element(by=By.XPATH, value='/html/body/main/div/div[2]/div[1]/div[2]/div[1]/div[2]/p[1]/span[2]')
+            print('Age: ', age)
+            ages=age.text.strip()
+            print('age :', ages)
+            vari = mhquote(int(ages))
+            sndurl = "https://api.textdrip.com/api/send-message"
+            data = {
+                "receiver": number,
+                "message": str(vari)+ ''' $0  Calendar Year Deductible for Day to Day Services Fully Tax Deductible No copays 24 mo. Rate Guarantee Dental/Vision(optional) Does this work for your budget?'''
+                }
+            print('quoting')
+            jj = requests.post(sndurl, headers=headers, data=data)
+            print(jj)
+            #numbers.remove(number)
+            driver.quit()
+            #text_display.insert(tk.END, data['message'])
+            #text_display.insert(tk.END, number)
+
 
 import tkinter as tk
 
